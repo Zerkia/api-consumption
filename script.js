@@ -2,11 +2,16 @@ import { OPEN_WEATHER_API_KEY, MAPBOX_API_KEY, TICKETMASTER_API_KEY} from './key
 
 const button = document.querySelector('.button');
 const inputValue = document.querySelector('.inputValue');
+
 const cityInfo = document.getElementById('cityInfo');
 const cityName = document.querySelector('.cityName');
 const cityTemp = document.querySelector('.cityTemp');
 const cityDesc = document.querySelector('.cityDesc');
+
 const mapContainer = document.getElementById('mapContainer');
+
+const eventInfo = document.getElementById('eventinfo');
+const eventContainer = document.querySelector('eventContainer');
 
 button.addEventListener('click', async function(){
     try{
@@ -38,6 +43,7 @@ button.addEventListener('click', async function(){
         }
 
         // TICKETMASTER API
+        await fetchEvents();
 
     } catch(error){
         console.error("Error fetching City info");
@@ -92,5 +98,47 @@ button.addEventListener('click', async function(){
             console.error("Mapbox Error:", error);
             return ''; //Returns empty space instead of error map
         }
+    }
+
+    async function fetchEvents() {
+        try {
+            const eventUrl = `https://app.ticketmaster.com/discovery/v2/events.json?city=${inputValue.value}&apikey=${TICKETMASTER_API_KEY}`
+            const response = await fetch(eventUrl);
+
+            if(response.ok){
+                const eventData = await eventUrl.json();    
+
+                if(eventData.page.totalElements === 0){
+                    const eventMsg = document.createElement('p');
+                    eventMsg.innerText = 'There were no events found for this City';
+                    eventInfo.appendChild(eventMsg);
+                } else if(eventData.page.totalElements > 0){
+                    
+                    eventData._embedded.events.forEach(event => {
+                        const venues = event._embedded.venues;
+                        const eventText = event.name + '<br>';
+                        eventText += event.dates.start.localDate + ', ' + event.dates.start.localTime;
+                        for(const venue of venues) {
+                            eventText += ', ' + venue.name;
+                        }
+
+                        //Insert new data
+                        const eventRes = document.createElement('p');
+                        eventRes.innerHTML = eventText;
+
+                        eventInfo.appendChild(eventRes);
+
+                        return eventInfo;
+                    })
+                } else {
+                    return null;
+                }
+            } else {
+                throw new Error(`Error fetching events (${response.status} - ${response.statusText})`)
+            }
+        } catch(error) {
+            console.error("Error fetching event data");
+        }
+    
     }
 });
