@@ -3,16 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <script type="module" src="script.js" defer></script>
+    <link rel="stylesheet" href="./css/style.css">
+    <script type="module" src="./js/script.js" defer></script>
     <title>Document</title>
 </head>
 <body>
     <main>
         <section class="border">
             <article class="input">
-                <input type="text" class="inputValue" placeholder="Enter city">
+                <input type="text" class="inputValue" placeholder="Enter city" value="Paris">
                 <input type="submit" value="Submit" class="button">
+                <p class="errorMsg hide"></p>
             </article>
         </section>
         <br>
@@ -26,7 +27,12 @@
         </section>
         <br>
         <section id="eventInfo">
-            
+            <p class="eventHeader hide">Events</p>
+            <p class="eventHeaderBorder hide"></p>
+            <p class="eventMsg hide"></p>
+            <div class="eventList">
+                <!-- Events go here -->
+            </div>
         </section>
     </main>
 </body>

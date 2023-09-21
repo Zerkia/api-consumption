@@ -1,0 +1,112 @@
+/* CSS VARIABLES */
+
+/* GLOBAL CSS */
+
+:root {
+    --black: #000000;
+    --red: #ff0000;
+    --subtleGrey: #ebebeb;
+}
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body{
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+main{
+    margin: 20px;
+}
+
+/* MULTI-USE CSS */
+
+.border{
+    border: 1px solid var(--black);
+    border-radius: 10px;
+}
+
+.hide{
+    display:none;
+}
+
+.show{
+    display:block;
+}
+
+/* INPUT CSS */
+
+.input{
+    text-align: center;
+    margin: 50px 0;
+}
+
+input[type="text"]{
+    height: 50px;
+    width: 600px;
+    background: var(--subtleGrey);
+    font-weight: bold;
+    font-size: 20px;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 10px;
+}
+
+input[type="submit"]{
+    height: 50px;
+    width: 100px;
+    background: var(--subtleGrey);
+    font-weight: bold;
+    font-size: 20px;
+    border: none;
+    border-radius: 10px;
+}
+
+.errorMsg{
+    margin-top:10px;
+    color:var(--red);
+}
+
+/* OPENWEATHERMAP API CSS */
+
+.display{
+    text-align: center;
+    margin: 25px 0;
+}
+
+/* MAPBOX API CSS */
+
+.centerImage{
+    display:block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 20px;
+}
+
+/* TICKETMASTER API CSS */
+
+.eventHeader{
+    margin-top: 5px;
+    margin-bottom: 5px;
+    text-align: center;
+    font-weight: bold;
+    font-size:18px;
+}
+.eventHeaderBorder{
+    border-bottom:1px solid var(--black);
+}
+
+.eventMsg{
+    text-align: center;
+}
+
+.event{
+    text-align:center;
+}
+
+.oddEvent{
+    padding: 5px;
+    background-color: var(--subtleGrey);
+}

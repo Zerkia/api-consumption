@@ -1,20 +1,28 @@
 import { OPEN_WEATHER_API_KEY, MAPBOX_API_KEY, TICKETMASTER_API_KEY} from './keys.js';
 
-const button = document.querySelector('.button');
 const inputValue = document.querySelector('.inputValue');
+const button = document.querySelector('.button');
+const errorMsg = document.querySelector('.errorMsg');
 
-const cityInfo = document.getElementById('cityInfo');
+const cityInfo = document.querySelector('#cityInfo');
 const cityName = document.querySelector('.cityName');
 const cityTemp = document.querySelector('.cityTemp');
 const cityDesc = document.querySelector('.cityDesc');
 
-const mapContainer = document.getElementById('mapContainer');
+const mapContainer = document.querySelector('#mapContainer');
 
-const eventInfo = document.getElementById('eventinfo');
-const eventContainer = document.querySelector('eventContainer');
+const eventInfo = document.querySelector('#eventInfo');
+const eventHeader = document.querySelector('.eventHeader');
+const eventHeaderBorder = document.querySelector('.eventHeaderBorder');
+const eventList = document.querySelector('.eventList');
+const eventMsg = document.querySelector('.eventMsg');
 
 button.addEventListener('click', async function(){
     try{
+        //ADDITIONAL INFO
+        errorMsg.classList.remove('show');
+        errorMsg.classList.add('hide');
+        
         // OPEN WEATHER MAP API
         const weatherResponse = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${inputValue.value}&appid=${OPEN_WEATHER_API_KEY}&units=metric`);
         const weatherData = await weatherResponse.json();
@@ -32,7 +40,7 @@ button.addEventListener('click', async function(){
 
         // MAPBOX API
         const cityCoordinates = await getCityCoordinates(inputValue.value);
-        console.log(cityCoordinates)
+
         if (cityCoordinates) {
             const mapImageElement = await fetchMapboxStaticMap(cityCoordinates);
 
@@ -44,9 +52,11 @@ button.addEventListener('click', async function(){
 
         // TICKETMASTER API
         await fetchEvents();
-
     } catch(error){
-        console.error("Error fetching City info");
+        errorMsg.classList.remove('hide');
+        errorMsg.classList.add('show');
+        errorMsg.innerText = 'Error fetching City info - Perhaps you mispelled?';
+        console.error("Error fetching City info - Perhaps you mispelled?");
     }
 
     //Fetch long/lan for mapbox url (why can't you just enter a cityname? :( )
@@ -56,7 +66,6 @@ button.addEventListener('click', async function(){
         try {
             const response = await fetch(geocodingApiUrl);
             const coordinateData = await response.json();
-            console.log(coordinateData);
 
             //Only fetch if there's actual data
             if (coordinateData.features && coordinateData.features.length > 0) {
@@ -106,17 +115,27 @@ button.addEventListener('click', async function(){
             const response = await fetch(eventUrl);
 
             if(response.ok){
-                const eventData = await eventUrl.json();    
+                eventHeader.classList.remove('hide');
+                eventHeader.classList.add('show');
+                eventHeaderBorder.classList.remove('hide');
+                eventHeaderBorder.classList.add('show');
+                const eventData = await response.json();
 
                 if(eventData.page.totalElements === 0){
-                    const eventMsg = document.createElement('p');
+                    eventList.innerHTML = '';
                     eventMsg.innerText = 'There were no events found for this City';
-                    eventInfo.appendChild(eventMsg);
+                    eventMsg.classList.remove('hide');
+                    eventMsg.classList.remove('show');
                 } else if(eventData.page.totalElements > 0){
-                    
+                    //Clears details in case of multiple searches
+                    eventMsg.innerText = '';
+                    eventList.innerHTML = '';
+                    eventInfo.classList.add('border');
+
+                    //Was gonna use tables but this is cleaner for a task of this size.
                     eventData._embedded.events.forEach(event => {
                         const venues = event._embedded.venues;
-                        const eventText = event.name + '<br>';
+                        let eventText = event.name + '<br>';
                         eventText += event.dates.start.localDate + ', ' + event.dates.start.localTime;
                         for(const venue of venues) {
                             eventText += ', ' + venue.name;
@@ -124,21 +143,19 @@ button.addEventListener('click', async function(){
 
                         //Insert new data
                         const eventRes = document.createElement('p');
+                        eventRes.classList.add('event');
                         eventRes.innerHTML = eventText;
 
-                        eventInfo.appendChild(eventRes);
-
-                        return eventInfo;
-                    })
-                } else {
-                    return null;
-                }
+                        eventList.appendChild(eventRes);
+                    });
+                    //Not sure how to do this with my eventList variable, didn't have time to look into it.
+                    document.querySelectorAll('.eventList > p:nth-child(odd)').forEach((eventRes) => eventRes.classList.add('oddEvent'));
+                };
             } else {
                 throw new Error(`Error fetching events (${response.status} - ${response.statusText})`)
             }
         } catch(error) {
-            console.error("Error fetching event data");
-        }
-    
-    }
+            console.error("Error fetching event data", error);
+        };
+    };
 });
